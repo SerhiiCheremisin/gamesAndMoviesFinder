@@ -5,6 +5,7 @@ const initState:gamesState = {
     isGamesListLoaded : false,
     gamesList : [],
     platformList: [],
+    activePlatform : '',
     isGamesListFails: false,
     chosenGame : {
         id: 0,
@@ -53,6 +54,9 @@ const gameReducer = createSlice({
          },
          setChosenGame (state, action) {
              state = {...state, ...state.chosenGame = action.payload}
+         },
+         setActivePlatform (state, action) {
+             state = {...state, ...state.activePlatform = action.payload}
          } 
     },
     extraReducers: {
@@ -70,6 +74,6 @@ const gameReducer = createSlice({
     } 
 })
 
-export const { setLoaded, setPlatrorm, setChosenGame } = gameReducer.actions;
+export const { setLoaded, setPlatrorm, setChosenGame, setActivePlatform } = gameReducer.actions;
 
 export default gameReducer.reducer;

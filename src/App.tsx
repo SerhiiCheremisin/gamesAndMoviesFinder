@@ -6,7 +6,7 @@ import styled from 'styled-components';
 //components
 import MovieSearch from './pages/MovieSearch';
 import GamaSearch from './pages/GamaSearch';
-
+import Home from './pages/Home';
 
 const NavList = styled.ul`
    display: flex;
@@ -46,6 +46,7 @@ function App():JSX.Element {
     <Routes>
        <Route path='/movie' element={<MovieSearch/>}/>
        <Route path='/game' element={<GamaSearch/>}/>
+       <Route path='/' element={<Home/>}/>
     </Routes>
     </main>
     </>

@@ -42,7 +42,7 @@ export interface movie {
 }
 
 
-interface singleGame {
+export interface singleGame {
     id: number ,
     title: string,
     thumbnail: string,
@@ -61,6 +61,7 @@ export interface gamesState {
     isGamesListLoaded : boolean,
     isGamesListFails : boolean,
     gamesList : singleGame[],
+    activePlatform : string,
     platformList: string[]
     chosenGame : singleGame,
 }

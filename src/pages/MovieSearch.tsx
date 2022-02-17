@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store/index';
-import { setTitle, fetchMovie } from '../redux/store/slices/movieSlice';
+import { setTitle, fetchMovie, setResponseIncorrect } from '../redux/store/slices/movieSlice';
 import styled from 'styled-components';
 import MovieItem from '../components/MovieItem';
-
+import Loader from '../components/Loader';
 
 const MovieWrapper = styled.div`
   display: flex;
@@ -47,7 +47,18 @@ export default function MovieSearch():JSX.Element {
   const isLoading = useSelector((state:RootState) => state.movie.isSearchAtive);
   const isSuccess = useSelector((state:RootState) => state.movie.searchSucceed);
   const movie = useSelector((state:RootState) => state.movie.foundMovie);
+  const isFail = useSelector((state:RootState) => state.movie.searchFails);
 
+
+  useEffect(() => {
+   if (movie.hasOwnProperty('Error')) {
+       const setFail = {
+        success: false,
+        fail: true
+       }
+       dispatch(setResponseIncorrect(setFail))
+   }
+  },[movie])
 
   const formHandler = (e:React.FormEvent<HTMLFormElement>) => {
    e.preventDefault();
@@ -66,9 +77,9 @@ export default function MovieSearch():JSX.Element {
     <Input type="text" value={title} onChange={(e) => dispatch(setTitle(e.target.value))} />
     <Button type='submit'>Find movie</Button>
     </Form>
-    {isLoading && <h2>Loading....</h2>}
-    {isSuccess && <MovieItem/>
-    }
+    {isLoading && <Loader/>}
+    {isSuccess && <MovieItem/>}
+    {isFail && <h2>Such movie does not exist in our database</h2>}
     </MovieWrapper>
   )
 }

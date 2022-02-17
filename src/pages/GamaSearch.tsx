@@ -1,8 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import { fetchGamesList, setPlatrorm, setChosenGame } from '../redux/store/slices/gamesSlice';
+import { fetchGamesList, setPlatrorm, setChosenGame, setActivePlatform } from '../redux/store/slices/gamesSlice';
 import { useSelector, useDispatch} from 'react-redux';
 import { RootState } from '../redux/store/index';
 import styled from 'styled-components';
+import GameItem from '../components/GameItem';
+import PlatformList from '../components/PlatformList';
 
 const GameWrapper = styled.div`
     display: flex;
@@ -23,7 +25,6 @@ const Form = styled.form`
     display: flex;
     flex-direction: column;
     width: 40%;
-
 `
 
 const Input = styled.input`
@@ -47,22 +48,21 @@ const IMG = styled.img`
     height: 100%;
 `
 
-const GameSelf = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-
-`
-const Poster = styled.img`
-    
-`
-const GameItem = styled.div`
+const ButtonGroup = styled.ul`
     display: flex;
     justify-content: center;
-    font-size: 20px;
-    font-weight: bold;
+    gap: 10px;
 `
-
+const PlatformItem = styled.li`
+    cursor: pointer;
+    background-color: aqua;
+    border-radius: 15px;
+    padding: 5px 10px;
+    transition: all .5s ease;
+    &:hover{
+        background-color: antiquewhite;
+    }
+`
 
 const GamaSearch = ():JSX.Element => {
 const dispatch = useDispatch();
@@ -75,6 +75,7 @@ const chosenGame = useSelector((state:RootState) => state.games.chosenGame);
 const [isSearchActive, setIsSearchActive] = useState<boolean>(false);
 const [searchValue, setSearchValue] = useState<string>('');
 const [gameChosen, setGameChosen] = useState<boolean>(false);
+const [platformList, setPlatformList] = useState<boolean>(false);
 
 const HiddenSearch = styled.div`
     display: ${isSearchActive ? 'flex' : 'none'};
@@ -92,6 +93,13 @@ useEffect(() => {
     }
     dispatch(fetchGamesList())
 },[])    
+
+useEffect(() => {
+  if (chosenGame.title !== ''){
+    setGameChosen(true);
+    setPlatformList(false);
+  }
+},[chosenGame])
 
 useEffect(() => {
   if(gamesLoaded) {
@@ -118,10 +126,17 @@ useEffect(() => {
 
 const choseHandler = (title:string):void => {
    const pickedGame = gameList.filter(game => game.title === title)
-   dispatch(setChosenGame(pickedGame[0]))
-   setGameChosen(true)
-   setIsSearchActive(false)
-   setSearchValue('')
+   dispatch(setChosenGame(pickedGame[0]));
+   setGameChosen(true);
+   setIsSearchActive(false);
+   setSearchValue('');
+   setPlatformList(false);
+}
+
+const platforHandler = (el:string):void => {
+    setGameChosen(false);
+    setPlatformList(true);
+    dispatch(setActivePlatform(el));
 }
 
 const hiddenRenderLogic = () => {
@@ -147,22 +162,19 @@ const hiddenRenderLogic = () => {
       <GameWrapper>
         <Title>You can search details about any Free-to-Play game</Title>
          <Form>
-           <Input value={searchValue} onChange={(e) =>setSearchValue(e.target.value) } placeholder='Type to search a game'/>
+           <Input value={searchValue} onChange={(e) =>setSearchValue(e.target.value)} placeholder='Type to search a game'/>
+           <Title>Or you can shose list by platform</Title>
+           <ButtonGroup>
+            {platform.map((el) => (
+                  <PlatformItem onClick={() => platforHandler(el)}>{el}</PlatformItem>      
+            ))}
+            </ButtonGroup>   
          </Form>
          <HiddenSearch>
           {hiddenRenderLogic()}
          </HiddenSearch>
-         {gameChosen && 
-         <GameSelf>
-          <GameItem>{chosenGame.title}</GameItem>
-          <Poster src={chosenGame.thumbnail}/>
-          <GameItem>{`Released in ${chosenGame.release_date}`}</GameItem>
-          <GameItem>{`Developed by: ${chosenGame.developer}`}</GameItem>
-          <GameItem>{`Publisher is: ${chosenGame.publisher}`}</GameItem>
-          <GameItem>{`Genre is: ${chosenGame.genre}`}</GameItem>
-          <GameItem>{`URL: ${chosenGame.game_url}`}</GameItem>
-         </GameSelf>
-         }
+         {gameChosen && <GameItem/>}
+         {platformList && <PlatformList/>}
       </GameWrapper>
 
   )

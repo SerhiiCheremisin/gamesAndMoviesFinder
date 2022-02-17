@@ -58,7 +58,11 @@ const movieReducer = createSlice({
     reducers: {
        setTitle (state, action) {
             state = {...state, ...state.title = action.payload}
-       }
+       },
+       setResponseIncorrect (state, action) {
+           const {success, fail} = action.payload;
+           state = {...state, ...state.searchSucceed = success, ...state.searchFails = fail}
+       },
     },
     extraReducers : {
         [fetchMovie.pending.toString()] : (state:any) => { state.isSearchAtive = true},
@@ -73,6 +77,6 @@ const movieReducer = createSlice({
     }
 })
 
-export const { setTitle } = movieReducer.actions;
+export const { setTitle,setResponseIncorrect } = movieReducer.actions;
 
 export default movieReducer.reducer;
